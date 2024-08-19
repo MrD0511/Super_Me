@@ -8,7 +8,7 @@ player_jump = pygame.image.load('./images/mario/mario_jump.png')
 
 class Player(pygame.sprite.Sprite):
 
-    def __init__(self, x, y, blocks, tubes):
+    def __init__(self, x, y, ground, tubes):
         super().__init__()
 
         self.image = player_idle.convert_alpha()
@@ -22,7 +22,7 @@ class Player(pygame.sprite.Sprite):
         self.run_index = 0
         self.run_animation_speed = 0.2
         self.direction = 'right'
-        self.blocks = blocks
+        self.ground = ground
         self.tubes = tubes
 
     def update(self):
@@ -63,7 +63,7 @@ class Player(pygame.sprite.Sprite):
                 self.image = pygame.transform.flip(self.image, True, False)
 
 
-        for block in self.blocks:
+        for block in self.ground:
             if self.rect.colliderect(block.rect):
                 if self.velocity_y > 0:
                     self.rect.bottom =  block.rect.top

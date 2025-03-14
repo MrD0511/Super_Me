@@ -1,4 +1,5 @@
 import pygame
+from ground_block import Block, Treasure_Block
 
 player_idle = pygame.image.load('./images/mario/mario.png')
 player_run1 = pygame.image.load('./images/mario/mario_move0.png')
@@ -8,7 +9,7 @@ player_jump = pygame.image.load('./images/mario/mario_jump.png')
 
 class Player(pygame.sprite.Sprite):
 
-    def __init__(self, x, y, ground, tubes):
+    def __init__(self, x, y):
         super().__init__()
 
         self.image = player_idle.convert_alpha()
@@ -22,11 +23,9 @@ class Player(pygame.sprite.Sprite):
         self.run_index = 0
         self.run_animation_speed = 0.2
         self.direction = 'right'
-        self.ground = ground
-        self.tubes = tubes
         self.is_jumping = False
 
-    def update(self, blocks):
+    def update(self, collidable_objs):
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]:
@@ -49,11 +48,18 @@ class Player(pygame.sprite.Sprite):
         if self.direction == 'left':
             self.image = pygame.transform.flip(self.image, True, False)
 
+        for obj in collidable_objs:
+            if self.rect.colliderect(obj.rect):
+                if keys[pygame.K_LEFT]:  # If moving left
+                    self.rect.left = obj.rect.right
+                if keys[pygame.K_RIGHT]:  # If moving right
+                    self.rect.right = obj.rect.left
+        
         if (keys[pygame.K_SPACE] or keys[pygame.K_UP]) and self.on_ground :
             self.velocity_y -= 15
             self.on_ground = False
 
-        self.velocity_y += 1
+        self.velocity_y = min(self.velocity_y + 1, 10)  # Max fall speed is 10
         self.rect.y += self.velocity_y
 
         if not self.on_ground:
@@ -62,38 +68,29 @@ class Player(pygame.sprite.Sprite):
             if self.direction == 'left':
                 self.image = pygame.transform.flip(self.image, True, False)
 
-
-        for block in self.ground:
-            if self.rect.colliderect(block.rect):
-                if self.velocity_y > 0:
-                    self.rect.bottom =  block.rect.top
-                    self.velocity_y = 0
-                    self.on_ground = True
-
-        for tube in self.tubes:
-            if self.rect.colliderect(tube.rect):
-                if self.velocity_y > 0:
-                    self.rect.bottom =  tube.rect.top
-                    self.velocity_y = 0
-                    self.on_ground = True
-                elif self.direction == 'right':
-                    self.rect.right = tube.rect.left
-                else:
-                    self.rect.left = tube.rect.right
-            
-        for block in blocks:
-            if self.rect.colliderect(block.rect):
-
+        
+        self.on_ground = False
+        for obj in collidable_objs:
+            if self.rect.colliderect(obj.rect):
                 if self.velocity_y > 0:
                     self.velocity_y = 0
-                    self.rect.bottom = block.rect.top
+                    self.rect.bottom = obj.rect.top
                     self.on_ground = True
+                elif self.velocity_y < 0 and self.rect.bottom > obj.rect.bottom:
+                    self.rect.top = obj.rect.bottom
+                    self.velocity_y = 0
 
-                elif self.rect.right <= block.rect.left:
-                    self.rect.right = block.rect.left
+                    if isinstance(obj, Block):
+                        obj.is_bouncing = True
+                    elif isinstance(obj, Treasure_Block):
+                        obj.is_bouncing = True
+                        obj.is_hit = True
 
-                elif self.rect.left >= block.rect.right:
-                    self.rect.left = block.rect.right
+
+
+
+                
+
                     
                 
                 

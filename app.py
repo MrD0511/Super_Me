@@ -10,7 +10,6 @@ from big_mountain import Big_Mountain
 from bush import Bush
 from bush import Small_Bush
 from cloud import Small_Cloud
-from ground_block import handle_collisions
 
 pygame.init()
 
@@ -35,6 +34,8 @@ treasure_blocks = pygame.sprite.Group()
 tubes = pygame.sprite.Group()
 mountains = pygame.sprite.Group()
 bushes = pygame.sprite.Group()
+coins = pygame.sprite.Group()
+collidable_objs = pygame.sprite.Group()
 
 level_map = [
     "                              C                                    ",
@@ -57,15 +58,16 @@ for row_index,row in enumerate(level_map):
     for col_index, col in enumerate(row):
         if col == 'G':
             block = Ground_Block(col_index*32, row_index*32)
+            collidable_objs.add(block)
             ground_blocks.add(block)
 
         elif col == 'C':
-            print(col_index, row_index)
             cloud = Small_Cloud(col_index*32, row_index*32)
             clouds.add(cloud)
 
         elif col == 'P':
             tube = Tube(col_index*32, row_index*32)
+            collidable_objs.add(tube)
             tubes.add(tube)
 
         elif col == 'm':
@@ -86,14 +88,16 @@ for row_index,row in enumerate(level_map):
 
         elif col == 'l':
             block = Block(col_index*32, row_index*32)
+            collidable_objs.add(block)
             blocks.add(block)
 
         elif col == 'T':
             block = Treasure_Block(col_index*32, row_index*32)
+            collidable_objs.add(block)
             treasure_blocks.add(block)
 
 
-player = Player(100, SCREEN_HEIGHT - 4 * 32 , ground= ground_blocks , tubes=tubes)
+player = Player(100, SCREEN_HEIGHT - 4 * 32 )
 # Set up display
 all_sprites.add(player)
 
@@ -101,11 +105,12 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-    # blocks.update(player)
-    # treasure_blocks.update(player)
-    player.update(blocks=blocks)
-    camera.update(player)
 
+    player.update(collidable_objs)
+    camera.update(player)
+    blocks.update()
+    treasure_blocks.update(coins)
+    coins.update()
     # Draw everything
     screen.fill((0, 140, 250)) 
 
@@ -129,13 +134,12 @@ while running:
 
     for block in treasure_blocks:
         screen.blit(block.image, camera.apply(block))
-        screen.blit(block.coin, camera.apply(block))
+
+    for coin in coins:
+        screen.blit(coin.image, camera.apply(coin))
 
     for sprite in all_sprites:
         screen.blit(sprite.image, camera.apply(sprite))
-    
-    handle_collisions(player, blocks)
-    handle_collisions(player, treasure_blocks)
 
     pygame.display.flip()  # Update the display
     clock.tick(FPS)

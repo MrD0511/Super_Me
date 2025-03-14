@@ -96,7 +96,7 @@ class Treasure_Block(pygame.sprite.Sprite):
 
             self.bouncing_timer += 1
         
-        if self.is_hit:
+        if self.is_hit and self.is_active:
             self.image = self.hited_image
             self.coin = Coin(self.rect.x, self.rect.y - 30)
             coins.add(self.coin)

@@ -1,5 +1,6 @@
 import pygame
 from ground_block import Block, Treasure_Block
+from goombas import Goombas
 
 player_idle = pygame.image.load('./images/mario/mario.png')
 player_run1 = pygame.image.load('./images/mario/mario_move0.png')
@@ -25,7 +26,7 @@ class Player(pygame.sprite.Sprite):
         self.direction = 'right'
         self.is_jumping = False
 
-    def update(self, collidable_objs):
+    def update(self, collidable_objs, collidable_enimies):
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]:
@@ -49,6 +50,13 @@ class Player(pygame.sprite.Sprite):
             self.image = pygame.transform.flip(self.image, True, False)
 
         for obj in collidable_objs:
+            if self.rect.colliderect(obj.rect):
+                if keys[pygame.K_LEFT]:  # If moving left
+                    self.rect.left = obj.rect.right
+                if keys[pygame.K_RIGHT]:  # If moving right
+                    self.rect.right = obj.rect.left
+
+        for obj in collidable_enimies:
             if self.rect.colliderect(obj.rect):
                 if keys[pygame.K_LEFT]:  # If moving left
                     self.rect.left = obj.rect.right
@@ -85,6 +93,15 @@ class Player(pygame.sprite.Sprite):
                     elif isinstance(obj, Treasure_Block):
                         obj.is_bouncing = True
                         obj.is_hit = True
+
+        for obj in collidable_enimies:
+            if self.rect.colliderect(obj.rect):
+                if self.velocity_y > 0:
+                    if isinstance(obj, Goombas):
+                        obj.die()
+
+
+        
 
 
 

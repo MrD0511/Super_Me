@@ -10,6 +10,7 @@ from big_mountain import Big_Mountain
 from bush import Bush
 from bush import Small_Bush
 from cloud import Small_Cloud
+from goombas import Goombas
 
 pygame.init()
 
@@ -36,6 +37,8 @@ mountains = pygame.sprite.Group()
 bushes = pygame.sprite.Group()
 coins = pygame.sprite.Group()
 collidable_objs = pygame.sprite.Group()
+collidable_enimies = pygame.sprite.Group()
+goomabases = pygame.sprite.Group()
 
 level_map = [
     "                              C                                    ",
@@ -48,9 +51,9 @@ level_map = [
     "                 T  lTlTl                                          ",
     "M                                    P                             ",
     "               M            P                                      ",
-    "           B           b                                           ",
-    "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
-    "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
+    "           B   g       b       g g        g                        ",
+    "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG  GGGGGGGGGGGGGGGGGGGG",
+    "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG  GGGGGGGGGGGGGGGGGGGG",
 ]
 
 camera = Camera(len(level_map[0]) * 32, len(level_map) * 32, SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -60,6 +63,11 @@ for row_index,row in enumerate(level_map):
             block = Ground_Block(col_index*32, row_index*32)
             collidable_objs.add(block)
             ground_blocks.add(block)
+        
+        elif col == 'g':
+            goomabas = Goombas(col_index*32, row_index*32)
+            collidable_enimies.add(goomabas)
+            goomabases.add(goomabas)
 
         elif col == 'C':
             cloud = Small_Cloud(col_index*32, row_index*32)
@@ -106,11 +114,13 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    player.update(collidable_objs)
+    player.update(collidable_objs, collidable_enimies)
     camera.update(player)
     blocks.update()
     treasure_blocks.update(coins)
     coins.update()
+    goomabases.update(collidable_objs)
+    
     # Draw everything
     screen.fill((0, 140, 250)) 
 
@@ -138,8 +148,12 @@ while running:
     for coin in coins:
         screen.blit(coin.image, camera.apply(coin))
 
+    for goomabas in goomabases:
+        screen.blit(goomabas.image, camera.apply(goomabas))
+
     for sprite in all_sprites:
         screen.blit(sprite.image, camera.apply(sprite))
+
 
     pygame.display.flip()  # Update the display
     clock.tick(FPS)

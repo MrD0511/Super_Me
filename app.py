@@ -10,6 +10,7 @@ from big_mountain import Big_Mountain
 from bush import Bush
 from bush import Small_Bush
 from cloud import Small_Cloud
+from ground_block import handle_collisions
 
 pygame.init()
 
@@ -19,7 +20,6 @@ FPS = 30
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Super Mario Bros. Remake")
-
 
 all_sprites = pygame.sprite.Group()
 # Initialize Pygame
@@ -31,6 +31,7 @@ running = True
 
 ground_blocks = pygame.sprite.Group()
 blocks = pygame.sprite.Group()
+treasure_blocks = pygame.sprite.Group()
 tubes = pygame.sprite.Group()
 mountains = pygame.sprite.Group()
 bushes = pygame.sprite.Group()
@@ -40,11 +41,11 @@ level_map = [
     "      C                                C          C                ",
     "                     C                                C            ",
     "          C                                                        ",
-    "                                                                   ",
-    "                                                                   ",
     "                      T                                            ",
     "                                                                   ",
-    "M               T   lTlTl            P                             ",
+    "                                                                   ",
+    "                 T  lTlTl                                          ",
+    "M                                    P                             ",
     "               M            P                                      ",
     "           B           b                                           ",
     "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
@@ -89,7 +90,7 @@ for row_index,row in enumerate(level_map):
 
         elif col == 'T':
             block = Treasure_Block(col_index*32, row_index*32)
-            blocks.add(block)
+            treasure_blocks.add(block)
 
 
 player = Player(100, SCREEN_HEIGHT - 4 * 32 , ground= ground_blocks , tubes=tubes)
@@ -100,8 +101,9 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-    blocks.update(player)
-    player.update()
+    # blocks.update(player)
+    # treasure_blocks.update(player)
+    player.update(blocks=blocks)
     camera.update(player)
 
     # Draw everything
@@ -125,9 +127,15 @@ while running:
     for block in blocks:
         screen.blit(block.image, camera.apply(block))
 
+    for block in treasure_blocks:
+        screen.blit(block.image, camera.apply(block))
+        screen.blit(block.coin, camera.apply(block))
+
     for sprite in all_sprites:
         screen.blit(sprite.image, camera.apply(sprite))
     
+    handle_collisions(player, blocks)
+    handle_collisions(player, treasure_blocks)
 
     pygame.display.flip()  # Update the display
     clock.tick(FPS)

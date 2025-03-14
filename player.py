@@ -24,8 +24,9 @@ class Player(pygame.sprite.Sprite):
         self.direction = 'right'
         self.ground = ground
         self.tubes = tubes
+        self.is_jumping = False
 
-    def update(self):
+    def update(self, blocks):
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]:
@@ -39,7 +40,6 @@ class Player(pygame.sprite.Sprite):
                 self.rect.x -= 5
                 self.direction = 'left'
                 
-
             if keys[pygame.K_RIGHT]:
                 self.rect.x += 5
                 self.direction = 'right'
@@ -49,7 +49,7 @@ class Player(pygame.sprite.Sprite):
         if self.direction == 'left':
             self.image = pygame.transform.flip(self.image, True, False)
 
-        if (keys[pygame.K_SPACE] or keys[pygame.K_UP]) and self.on_ground:
+        if (keys[pygame.K_SPACE] or keys[pygame.K_UP]) and self.on_ground :
             self.velocity_y -= 15
             self.on_ground = False
 
@@ -80,5 +80,24 @@ class Player(pygame.sprite.Sprite):
                     self.rect.right = tube.rect.left
                 else:
                     self.rect.left = tube.rect.right
+            
+        for block in blocks:
+            if self.rect.colliderect(block.rect):
+
+                if self.velocity_y > 0:
+                    self.velocity_y = 0
+                    self.rect.bottom = block.rect.top
+                    self.on_ground = True
+
+                elif self.rect.right <= block.rect.left:
+                    self.rect.right = block.rect.left
+
+                elif self.rect.left >= block.rect.right:
+                    self.rect.left = block.rect.right
+                    
+                
+                
+                
+
 
         

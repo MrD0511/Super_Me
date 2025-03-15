@@ -37,6 +37,8 @@ class Block(pygame.sprite.Sprite):
         self.is_bouncing = False
         self.original_y = y
         self.bouncing_timer = 0
+        self.block_hit_sound = pygame.mixer.Sound("./music/blockhit.wav")
+        # self.block_hit_sound.set_volume(0.3)
 
     def update(self):
         if self.is_bouncing:
@@ -50,9 +52,6 @@ class Block(pygame.sprite.Sprite):
                 self.bouncing_timer = 0
 
             self.bouncing_timer += 1
-        
-
-
 
 class Treasure_Block(pygame.sprite.Sprite):
 
@@ -71,7 +70,8 @@ class Treasure_Block(pygame.sprite.Sprite):
         self.hited_image = get_tile(tiles_image, 32*6, 0, 32, 32)
         self.animation_speed = 200
         self.last_update_tick = pygame.time.get_ticks()
-
+        self.coin_sound = pygame.mixer.Sound("./music/coin.wav")
+        self.coin_sound.set_volume(0.3)
         self.is_hit = False
         self.coin = None
         self.is_active = True
@@ -97,11 +97,12 @@ class Treasure_Block(pygame.sprite.Sprite):
             self.bouncing_timer += 1
         
         if self.is_hit and self.is_active:
+            self.is_active = False
             self.image = self.hited_image
             self.coin = Coin(self.rect.x, self.rect.y - 30)
             coins.add(self.coin)
             self.is_hit = False
-            self.is_active = False
+            self.coin_sound.play()
 
 class Coin(pygame.sprite.Sprite):
         

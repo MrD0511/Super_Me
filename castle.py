@@ -21,14 +21,11 @@ class Castle(pygame.sprite.Sprite):
         self.image.fill((0, 140, 250))
         self.image.blit(get_tile(32*12, 32, 32, 32), (0, 96))
         self.image.blit(get_tile(32*12, 32, 32, 32), (32, 96))
-        # self.image.blit(get_tile(32*12, 32, 32, 32), (64, 32))
         self.image.blit(get_tile(32*12, 32, 32, 32), (96, 96))
         self.image.blit(get_tile(32*12, 32, 32, 32), (128, 96))
-        # self.image.blit(get_tile(32*12, 32, 32, 32), (192, 32))
 
         self.image.blit(get_tile(32*12, 32, 32, 32), (0, 128))
         self.image.blit(get_tile(32*12, 32, 32, 32), (32, 128))
-        # self.image.blit(get_tile(32*12, 32, 32, 32), (64, 0))
         self.image.blit(get_tile(32*12, 32, 32, 32), (96, 128))
         self.image.blit(get_tile(32*12, 32, 32, 32), (128, 128))
 

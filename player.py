@@ -67,7 +67,7 @@ class Player(pygame.sprite.Sprite):
             self.velocity_y -= 15
             self.on_ground = False
 
-        self.velocity_y = min(self.velocity_y + 1, 10)  # Max fall speed is 10
+        self.velocity_y = min(self.velocity_y + 0.8, 10)  # Max fall speed is 10
         self.rect.y += self.velocity_y
 
         if not self.on_ground:
@@ -99,6 +99,7 @@ class Player(pygame.sprite.Sprite):
                 if self.velocity_y > 0:
                     if isinstance(obj, Goombas):
                         obj.die()
+                        self.velocity_y -= 10
 
 
         

@@ -3,7 +3,7 @@ import sys
 from player import Player
 from cloud import Cloud
 from camera import Camera
-from ground_block import Ground_Block, Block, Treasure_Block
+from ground_block import Ground_Block, Block, Treasure_Block, Stone
 from tube import Tube
 from mountain import Mountain
 from big_mountain import Big_Mountain
@@ -11,6 +11,7 @@ from bush import Bush
 from bush import Small_Bush
 from cloud import Small_Cloud
 from goombas import Goombas
+from castle import Castle
 
 pygame.init()
 
@@ -39,21 +40,23 @@ coins = pygame.sprite.Group()
 collidable_objs = pygame.sprite.Group()
 collidable_enimies = pygame.sprite.Group()
 goomabases = pygame.sprite.Group()
+stones = pygame.sprite.Group()
+castle_group = pygame.sprite.Group()
 
-level_map = [
-    "                              C                                    ",
-    "      C                                C          C                ",
-    "                     C                                C            ",
-    "          C                                                        ",
-    "                      T                                            ",
-    "                                                                   ",
-    "                                                                   ",
-    "                 T  lTlTl                                          ",
-    "M                                    P                             ",
-    "               M            P                                      ",
-    "           B   g       b       g g        g                        ",
-    "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG  GGGGGGGGGGGGGGGGGGGG",
-    "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG  GGGGGGGGGGGGGGGGGGGG",
+level_map = [ 
+    "                              C                                                                                                                                                                                                                                 ",
+    "      C                                C         C                                                                                                                                                                                                              ",
+    "                     C                              C                                                                                                                                                           s                                               ",
+    "          C                                                                                                  C                                                                                                 ss                                               ",
+    "                      T                                                                g g                        C                                                                                           sss                                               ",
+    "                                                                                   llllllll   lllT                     T             llll    lTTl                                                            ssss                                               ",
+    "                                                                                                                                                                                                            sssss                      E                        ",
+    "                 T  lTlTl                         P          P                                                                                         s  s          ss  s                                 ssssss                                               ",
+    "M                                       P           M                          lTl                    l   M   ll    T  T  T       l           ll      ss  ss        sss  ss               llTl            sssssss    M                                          ",
+    "               M            P                                      M                                                      M                          sss  sss M    ssss  sss   M   P                  P  ssssssss                           M                   ",
+    "           B   g       b                   B  g                B            b               b             g g        B         g g  b    g g  g g   ssssB ssss    sssss  ssss             b     g g     sssssssss          s            B           b           ",
+    "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG  GGGGGGGGGGGGGG   GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG  GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
+    "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG  GGGGGGGGGGGGGG   GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG  GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
 ]
 
 camera = Camera(len(level_map[0]) * 32, len(level_map) * 32, SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -64,19 +67,9 @@ for row_index,row in enumerate(level_map):
             collidable_objs.add(block)
             ground_blocks.add(block)
         
-        elif col == 'g':
-            goomabas = Goombas(col_index*32, row_index*32)
-            collidable_enimies.add(goomabas)
-            goomabases.add(goomabas)
-
         elif col == 'C':
             cloud = Small_Cloud(col_index*32, row_index*32)
             clouds.add(cloud)
-
-        elif col == 'P':
-            tube = Tube(col_index*32, row_index*32)
-            collidable_objs.add(tube)
-            tubes.add(tube)
 
         elif col == 'm':
             mountain = Mountain(col_index*32, row_index*32)
@@ -89,10 +82,19 @@ for row_index,row in enumerate(level_map):
         elif col == 'B':
             bush = Bush(col_index*32, row_index*32)
             bushes.add(bush)
-
+        
         elif col == 'b':
             bush = Small_Bush(col_index*32, row_index*32)
             mountains.add(bush)
+        
+        elif col == 'P':
+            tube = Tube(col_index*32, row_index*32)
+            collidable_objs.add(tube)
+            tubes.add(tube)
+
+        elif col == 'E':
+            castle = Castle(col_index*32, row_index*32)
+            castle_group.add(castle)
 
         elif col == 'l':
             block = Block(col_index*32, row_index*32)
@@ -104,8 +106,17 @@ for row_index,row in enumerate(level_map):
             collidable_objs.add(block)
             treasure_blocks.add(block)
 
+        elif col == 's':
+            stone = Stone(col_index*32, row_index*32)
+            collidable_objs.add(stone)
+            stones.add(stone)
 
-player = Player(100, SCREEN_HEIGHT - 4 * 32 )
+        elif col == 'g':
+            goomabas = Goombas(col_index*32, row_index*32)
+            collidable_enimies.add(goomabas)
+            goomabases.add(goomabas)
+
+player = Player(7000, SCREEN_HEIGHT - 4 * 32 )
 # Set up display
 all_sprites.add(player)
 
@@ -119,7 +130,7 @@ while running:
     blocks.update()
     treasure_blocks.update(coins)
     coins.update()
-    goomabases.update(collidable_objs)
+    goomabases.update(collidable_objs, player)
     
     # Draw everything
     screen.fill((0, 140, 250)) 
@@ -150,6 +161,12 @@ while running:
 
     for goomabas in goomabases:
         screen.blit(goomabas.image, camera.apply(goomabas))
+
+    for stone in stones:
+        screen.blit(stone.image, camera.apply(stone))
+
+    for castle in castle_group:
+        screen.blit(castle.image, camera.apply(castle))
 
     for sprite in all_sprites:
         screen.blit(sprite.image, camera.apply(sprite))

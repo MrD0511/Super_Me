@@ -130,12 +130,21 @@ class Coin(pygame.sprite.Sprite):
             self.image = self.images[self.image_idx]
             self.last_updated_tick = self.current_time
 
-        if self.timer < 10:
+        if self.timer < 15:
             self.rect.y -= 5
-        elif self.timer < 20:
+        elif self.timer < 30:
             self.rect.y += 5
         else:
             self.kill()
         
         self.timer += 1
       
+
+class Stone(pygame.sprite.Sprite):
+
+    def __init__(self, x, y):
+        super().__init__()
+        self.image = get_tile(tiles_image, 32*1, 0, 32, 32)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y

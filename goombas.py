@@ -16,27 +16,29 @@ class Goombas(pygame.sprite.Sprite):
         self.dead_img = pygame.image.load('./images/goombas_dead.png')
         self.is_dead = False
         self.death_time = 0
+        self.velocity_y = 0
         # Animation properties
         self.animation_speed = 200  # Change frame every 200ms
         self.last_update_time = pygame.time.get_ticks()
         self.run_index = 0
-
+        self.is_active = False
         # Movement speed
-        self.speed = 3
+        self.speed = 2
 
-    def update(self, collidable_objs):
+    def update(self, collidable_objs, player):
 
         if self.is_dead:
             if pygame.time.get_ticks() -self.death_time > 500:
                 self.kill() 
             return
-
-        old_x = self.rect.x  # Store previous position
-        if self.direction == 'left':
-            self.rect.x -= self.speed
-        elif self.direction == 'right':
-            self.rect.x += self.speed
         
+        if self.rect.x - player.rect.x < 400:
+            self.is_active = True
+
+
+        if not self.is_active:
+            return
+    
         # Handle animation timing
         current_time = pygame.time.get_ticks()
         if current_time - self.last_update_time > self.animation_speed:
@@ -44,7 +46,12 @@ class Goombas(pygame.sprite.Sprite):
             self.image = self.images[self.run_index]
             self.last_update_time = current_time  # Reset timer
 
-        # Move Goomba
+        old_x = self.rect.x  # Store previous position
+        old_y = self.rect.y
+        if self.direction == 'left':
+            self.rect.x -= self.speed
+        elif self.direction == 'right':
+            self.rect.x += self.speed
 
         # Collision detection (check left/right only)
         for obj in collidable_objs:
@@ -53,7 +60,24 @@ class Goombas(pygame.sprite.Sprite):
                 self.direction = 'right' if self.direction == 'left' else 'left'
                 break  # Stop checking further collisions
 
+        # Apply gravity
+        self.velocity_y += 1  # Simulate gravity
+        if self.velocity_y > 10:  # Limit fall speed
+            self.velocity_y = 10
+
+        self.rect.y += self.velocity_y  # Apply vertical movement
+
+        # Check for ground collision
+        self.on_ground = False
+        for obj in collidable_objs:
+            if self.rect.colliderect(obj):
+                if old_y < obj.rect.top:  # If it was above the object before falling
+                    self.rect.bottom = obj.rect.top  # Place it on top
+                    self.velocity_y = 0  # Reset gravity
+                    self.on_ground = True
+                break  # Stop checking further collisions
     
+
     def die(self):
         self.image = self.dead_img
         self.is_dead = True

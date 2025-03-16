@@ -32,7 +32,7 @@ A classic **Super Mario Bros.** remake built using **Pygame**. This project recr
 ### **How to Run**
 1. **Clone the Repository**
    ```sh
-   git clone https://github.com/MrD0511/super-mario-pygame.git
+   git clone https://github.com/MrD0511/Super_Me.git
    cd super-mario-pygame
 
    ```

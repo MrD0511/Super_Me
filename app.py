@@ -13,10 +13,18 @@ from cloud import Small_Cloud
 from goombas import Goombas
 from castle import Castle
 from flag import Pillar
+import os
+import sys
+
+def resource_path(relative_path):
+    """Return the absolute path, ensuring it's inside the correct directory."""
+    base_path = os.getcwd()  # Get current working directory
+    return os.path.join(base_path, relative_path)
+
 
 pygame.init()
 pygame.mixer.init()
-pygame.mixer.music.load("./music/bg.mp3")
+pygame.mixer.music.load(resource_path("assets/music/bg.mp3"))
 pygame.mixer.music.play(-1, 6)  # -1 makes it loop indefinitely
 pygame.mixer.music.set_volume(0.5)  # Adjust volume if needed (0.0 to 1.0)
 
@@ -51,16 +59,16 @@ flag = pygame.sprite.Group()
 pillar = pygame.sprite.Group()
 
 level_map = [ 
-    "                              C                                                                                                                                                                                                                                 ",
-    "      C                                C         C                                                                                                                                                                                                              ",
-    "                     C                              C                                                                                                                                                                   F                                       ",
-    "          C                                                                                                  C                                                                                                 ss                                               ",
-    "                      T                                                                g g                        C                                                                                           sss                                               ",
+    "                              c                                                      C                                                                                                                                                                          ",
+    "      C                                C         c                     c                                                                             C                                                                                                          ",
+    "                     C                              C                                                                       C                                                                                           F                            C          ",
+    "          c                                                                                                  C                        c                                      c                                 ss                    c                          ",
+    "                      T                                   C             C           g g                           c                                                                              C            sss                                          c    ",
     "                                                                                   llllllll   lllT                     T             llll    lTTl                                                            ssss                                               ",
     "                                                                                                                                                                                                            sssss               E                               ",
     "                 T  lTlTl                         P          P                                                                                         s  s          ss  s                                 ssssss                                               ",
     "M                                       P           M                          lTl                    l   M   ll    T  T  T       l           ll      ss  ss        sss  ss               llTl            sssssss  M                                            ",
-    "               M            P                                      M                                                      M                          sss  sss M    ssss  sss   M   P                  P  ssssssss                      M                        ",
+    "               M            P                                       M                                                     M                          sss  sss M    ssss  sss   M   P                  P  ssssssss                      M                        ",
     "          B    g       b                   B  g       g  g     B            b               b             g g        B         g g  b    g g  g g   ssssB ssss    sssss  ssss             b     g g     sssssssss       s        B           b                  ",
     "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG  GGGGGGGGGGGGGG   GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG  GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
     "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG  GGGGGGGGGGGGGG   GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG  GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
@@ -75,6 +83,10 @@ for row_index,row in enumerate(level_map):
             ground_blocks.add(block)
         
         elif col == 'C':
+            cloud = Cloud(col_index*32, row_index*32)
+            clouds.add(cloud)
+
+        elif col == 'c':
             cloud = Small_Cloud(col_index*32, row_index*32)
             clouds.add(cloud)
 
@@ -160,7 +172,7 @@ def restart_game():
     pygame.mixer.stop()
 
     # Restart background music
-    pygame.mixer.music.load("./music/bg.mp3")  # Load your background music file
+    pygame.mixer.music.load(resource_path("assets/music/bg.mp3"))  # Load your background music file
     pygame.mixer.music.play(-1, 6)  # Loop music indefinitely
     pygame.mixer.music.set_volume(0.5)
     # Clear all sprite groups

@@ -1,6 +1,14 @@
 import pygame
+import os
+import sys
 
-tiles = pygame.image.load("./images/platform/tiles.png")
+def resource_path(relative_path):
+    """Return the absolute path, ensuring it's inside the correct directory."""
+    base_path = os.getcwd()  # Get current working directory
+    return os.path.join(base_path, relative_path)
+
+
+tiles = pygame.image.load(resource_path("assets/images/platform/tiles.png"))
 
 def get_tile( x, y, width, height):
     tile_surface = pygame.Surface((height,width), pygame.SRCALPHA)

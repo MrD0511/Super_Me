@@ -2,14 +2,22 @@ import pygame
 from ground_block import Block, Treasure_Block
 from goombas import Goombas
 from flag import Pillar
+import os
+import sys
 
-player_idle = pygame.image.load('./images/Mario/mario.png')
-player_run1 = pygame.image.load('./images/Mario/mario_move0.png')
-player_run2 = pygame.image.load('./images/Mario/mario_move1.png') 
-player_run3 = pygame.image.load('./images/Mario/mario_move2.png')
-player_jump = pygame.image.load('./images/Mario/mario_jump.png')
-player_end = pygame.image.load('./images/Mario/mario_end.png')
-player_death = pygame.image.load('./images/Mario/mario_death.png')
+def resource_path(relative_path):
+    """Return the absolute path, ensuring it's inside the correct directory."""
+    base_path = os.getcwd()  # Get current working directory
+    return os.path.join(base_path, relative_path)
+
+player_idle = pygame.image.load(resource_path('assets/images/Mario/mario.png'))
+player_run1 = pygame.image.load(resource_path('assets/images/Mario/mario_move0.png'))
+player_run2 = pygame.image.load(resource_path('assets/images/Mario/mario_move1.png')) 
+player_run3 = pygame.image.load(resource_path('assets/images/Mario/mario_move2.png'))
+player_jump = pygame.image.load(resource_path('assets/images/Mario/mario_jump.png'))
+player_end = pygame.image.load(resource_path('assets/images/Mario/mario_end.png'))
+player_death = pygame.image.load(resource_path('assets/images/Mario/mario_death.png'))
+
 class Player(pygame.sprite.Sprite):
 
     def __init__(self, x, y):
@@ -31,13 +39,13 @@ class Player(pygame.sprite.Sprite):
         self.mario_end = False
         self.mario_walking_to_castle = False
         self.game_over = False
-        self.jumping_sound = pygame.mixer.Sound("./music/jump.wav")
+        self.jumping_sound = pygame.mixer.Sound(resource_path("assets/music/jump.wav"))
         self.jumping_sound.set_volume(0.3)
         self.mario_dead = False
-        self.death_sound = pygame.mixer.Sound("./music/death.wav")
+        self.death_sound = pygame.mixer.Sound(resource_path("assets/music/death.wav"))
         self.death_sound.set_volume(0.3)
         self.score = 0
-        self.levelend_sound = pygame.mixer.Sound("./music/levelend.wav")
+        self.levelend_sound = pygame.mixer.Sound(resource_path("assets/music/levelend.wav"))
         self.levelend_sound.set_volume(0.3)
         self.coins = 0
         self.initial = x
@@ -128,7 +136,7 @@ class Player(pygame.sprite.Sprite):
             self.on_ground = False
             self.jumping_sound.play()
 
-        self.velocity_y = min(self.velocity_y + 0.8, 10)  # Max fall speed is 10
+        self.velocity_y = min(self.velocity_y + 0.83, 10)  # Max fall speed is 10
         self.rect.y += self.velocity_y
 
         if self.mario_dead:

@@ -1,4 +1,11 @@
 import pygame
+import os
+import sys
+
+def resource_path(relative_path):
+    """Return the absolute path, ensuring it's inside the correct directory."""
+    base_path = os.getcwd()  # Get current working directory
+    return os.path.join(base_path, relative_path)
 
 def get_tile(image, x, y, width, height):
 
@@ -9,7 +16,7 @@ def get_tile(image, x, y, width, height):
     return tile_surface
 
 
-tiles_image = pygame.image.load("./images/platform/tiles.png")
+tiles_image = pygame.image.load(resource_path("assets/images/platform/tiles.png"))
 TILE_WIDTH = 32
 TILE_HEIGHT = 32
 tile_x = 0 * TILE_WIDTH  # Third column
@@ -37,7 +44,7 @@ class Block(pygame.sprite.Sprite):
         self.is_bouncing = False
         self.original_y = y
         self.bouncing_timer = 0
-        self.block_hit_sound = pygame.mixer.Sound("./music/blockhit.wav")
+        self.block_hit_sound = pygame.mixer.Sound(resource_path("assets/music/blockhit.wav"))
         # self.block_hit_sound.set_volume(0.3)
 
     def update(self):
@@ -70,7 +77,7 @@ class Treasure_Block(pygame.sprite.Sprite):
         self.hited_image = get_tile(tiles_image, 32*6, 0, 32, 32)
         self.animation_speed = 200
         self.last_update_tick = pygame.time.get_ticks()
-        self.coin_sound = pygame.mixer.Sound("./music/coin.wav")
+        self.coin_sound = pygame.mixer.Sound(resource_path("assets/music/coin.wav"))
         self.coin_sound.set_volume(0.3)
         self.is_hit = False
         self.coin = None
@@ -109,10 +116,10 @@ class Coin(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
         self.images = [
-            pygame.image.load("./images/coin_an0.png"),
-            pygame.image.load("./images/coin_an1.png"),
-            pygame.image.load("./images/coin_an2.png"),
-            pygame.image.load("./images/coin_an3.png")
+            pygame.image.load(resource_path("assets/images/coin_an0.png")),
+            pygame.image.load(resource_path("assets/images/coin_an1.png")),
+            pygame.image.load(resource_path("assets/images/coin_an2.png")),
+            pygame.image.load(resource_path("assets/images/coin_an3.png"))
         ]
         self.image = self.images[0]
         self.rect = self.image.get_rect(center=(x+16, y))

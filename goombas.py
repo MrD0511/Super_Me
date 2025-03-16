@@ -1,19 +1,27 @@
 import pygame
+import os
+import sys
+
+def resource_path(relative_path):
+    """Return the absolute path, ensuring it's inside the correct directory."""
+    base_path = os.getcwd()  # Get current working directory
+    return os.path.join(base_path, relative_path)
+
 
 class Goombas(pygame.sprite.Sprite):
 
     def __init__(self, x, y):
         super().__init__()
         self.images = [
-            pygame.image.load('./images/goombas_0.png'),
-            pygame.image.load('./images/goombas_1.png')
+            pygame.image.load(resource_path('assets/images/goombas_0.png')),
+            pygame.image.load(resource_path('assets/images/goombas_1.png'))
         ]
         self.image = self.images[0]
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
         self.direction = 'left'
-        self.dead_img = pygame.image.load('./images/goombas_dead.png')
+        self.dead_img = pygame.image.load(resource_path('assets/images/goombas_dead.png'))
         self.is_dead = False
         self.death_time = 0
         self.velocity_y = 0

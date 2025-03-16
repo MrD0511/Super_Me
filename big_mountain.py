@@ -1,10 +1,18 @@
 import pygame
+import os
+import sys
+
+def resource_path(relative_path):
+    """Return the absolute path, ensuring it's inside the correct directory."""
+    base_path = os.getcwd()  # Get current working directory
+    return os.path.join(base_path, relative_path)
+
 
 class Big_Mountain(pygame.sprite.Sprite):
 
     def __init__(self, x ,y):
         super().__init__()
-        self.tiles = pygame.image.load("./images/platform/tiles.png")
+        self.tiles = pygame.image.load(resource_path("assets/images/platform/tiles.png"))
         self.image = pygame.Surface((32*5,32*3))
         self.rect = self.image.get_rect()
         self.rect.x = x

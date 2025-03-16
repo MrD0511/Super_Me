@@ -82,3 +82,5 @@ A classic **Super Mario Bros.** remake built using **Pygame**. This project recr
 
 This project is for educational purposes only and is not intended for commercial use.
 Super Mario Bros. is a trademark of Nintendo.
+
+**🚀 Enjoy the game! Feel free to suggest any modifications. 😃**

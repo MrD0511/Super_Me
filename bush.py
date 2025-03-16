@@ -10,6 +10,7 @@ def resource_path(relative_path):
 
 tiles = pygame.image.load(resource_path("assets/images/platform/tiles.png"))
 
+# To get the small 32 x 32 images from the tile
 def get_tile( x, y, width, height):
     tile_surface = pygame.Surface((height,width), pygame.SRCALPHA)
 
@@ -17,15 +18,15 @@ def get_tile( x, y, width, height):
 
     return tile_surface
 
+# Bush class
 class Bush(pygame.sprite.Sprite):
 
     def __init__(self, x, y):
         super().__init__()
-        self.image = pygame.Surface((32*5, 32))
+        self.image = pygame.Surface((32*5, 32), pygame.SRCALPHA)        # Sprite
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.image.fill((0, 140, 250))
 
         self.image.blit(get_tile(32*5, 32, 32, 32), (0, 0))
         self.image.blit(get_tile(32*7, 32 ,32, 32), (32, 0))
@@ -33,15 +34,15 @@ class Bush(pygame.sprite.Sprite):
         self.image.blit(get_tile(32*7, 32 ,32, 32), (96, 0))
         self.image.blit(get_tile(32*6, 32, 32, 32), (128, 0))
 
+# Mini bush
 class Small_Bush(pygame.sprite.Sprite):
 
         def __init__(self, x, y):
             super().__init__()
-            self.image = pygame.Surface((32*3, 32))
+            self.image = pygame.Surface((32*3, 32), pygame.SRCALPHA)
             self.rect = self.image.get_rect()
             self.rect.x = x
             self.rect.y = y
-            self.image.fill((0, 140, 250))
 
             self.image.blit(get_tile(32*5, 32, 32, 32), (0, 0))
             self.image.blit(get_tile(32*7, 32 ,32, 32), (32, 0))

@@ -17,12 +17,11 @@ class Mountain(pygame.sprite.Sprite):
     def __init__(self, x ,y):
         super().__init__()
         self.tiles = pygame.image.load(resource_path("assets/images/platform/tiles.png"))
-        self.image = pygame.Surface((96,64))
+        self.image = pygame.Surface((96,64), pygame.SRCALPHA)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
 
-        self.image.fill((0, 140, 250))
         self.image.blit(self.get_tile(32, 32, 32, 32), (32, 32))
         self.image.blit(self.get_tile(32*2, 32, 32, 32), (0, 32))
         self.image.blit(self.get_tile(32*3, 32, 32, 32), (32, 0))

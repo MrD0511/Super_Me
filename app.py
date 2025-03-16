@@ -16,18 +16,27 @@ from flag import Pillar
 import os
 import sys
 
+# This game is distributed by elements and each element does its job
+# elements are represented by Classes
+# Below we are creating instance of each class elements and
+# I have added a single collison logic in player class update function
+# It uses collidable_objs list to handle everything
+
 def resource_path(relative_path):
     """Return the absolute path, ensuring it's inside the correct directory."""
     base_path = os.getcwd()  # Get current working directory
     return os.path.join(base_path, relative_path)
 
-
+# init pygame
 pygame.init()
+
+#init pygame.mixer for music
 pygame.mixer.init()
-pygame.mixer.music.load(resource_path("assets/music/bg.mp3"))
+pygame.mixer.music.load(resource_path("assets/music/bg.mp3"))       #load asset
 pygame.mixer.music.play(-1, 6)  # -1 makes it loop indefinitely
 pygame.mixer.music.set_volume(0.5)  # Adjust volume if needed (0.0 to 1.0)
 
+# screen height and width
 SCREEN_HEIGHT = 32*14
 SCREEN_WIDTH = 32*25
 FPS = 30
@@ -35,14 +44,13 @@ FPS = 30
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Super Marco")
 
-all_sprites = pygame.sprite.Group()
-# Initialize Pygame
-clouds = pygame.sprite.Group()
 
+all_sprites = pygame.sprite.Group()
 clock = pygame.time.Clock()
-# Main game loop
 running = True
 
+# sprites group to update everything simultaneously
+clouds = pygame.sprite.Group()
 ground_blocks = pygame.sprite.Group()
 blocks = pygame.sprite.Group()
 treasure_blocks = pygame.sprite.Group()
@@ -58,23 +66,28 @@ castle_group = pygame.sprite.Group()
 flag = pygame.sprite.Group()
 pillar = pygame.sprite.Group()
 
+
+# MAP : every row col shows 32 x 32 pixel in the game
+
 level_map = [ 
     "                              c                                                      C                                                                                                                                                                          ",
     "      C                                C         c                     c                                                                             C                                                                                                          ",
     "                     C                              C                                                                       C                                                                                           F                            C          ",
     "          c                                                                                                  C                        c                                      c                                 ss                    c                          ",
-    "                      T                                   C             C           g g                           c                                                                              C            sss                                          c    ",
+    "                      T                                   C             C           gg                            c                                                                              C            sss                                          c    ",
     "                                                                                   llllllll   lllT                     T             llll    lTTl                                                            ssss                                               ",
     "                                                                                                                                                                                                            sssss               E                               ",
     "                 T  lTlTl                         P          P                                                                                         s  s          ss  s                                 ssssss                                               ",
     "M                                       P           M                          lTl                    l   M   ll    T  T  T       l           ll      ss  ss        sss  ss               llTl            sssssss  M                                            ",
     "               M            P                                       M                                                     M                          sss  sss M    ssss  sss   M   P                  P  ssssssss                      M                        ",
-    "          B    g       b                   B  g       g  g     B            b               b             g g        B         g g  b    g g  g g   ssssB ssss    sssss  ssss             b     g g     sssssssss       s        B           b                  ",
+    "          B    g       b                   B  g       gg       B            b               b             gg         B         gg   b    gg gg      ssssB ssss    sssss  ssss             b     gg      sssssssss       s        B           b                  ",
     "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG  GGGGGGGGGGGGGG   GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG  GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
     "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG  GGGGGGGGGGGGGG   GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG  GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
 ]
 
 camera = Camera(len(level_map[0]) * 32, len(level_map) * 32, SCREEN_WIDTH, SCREEN_HEIGHT)
+
+# adding the map elements by converting them into corresponding game elements
 for row_index,row in enumerate(level_map):
     for col_index, col in enumerate(row):
         if col == 'G':
@@ -142,12 +155,16 @@ for row_index,row in enumerate(level_map):
             goomabases.add(goomabas)
 
 
-player = Player(300, SCREEN_HEIGHT - 4 * 32 )
+player = Player(300, SCREEN_HEIGHT - 4 * 32 )       # Our Player instnce
 
+
+# some other operations to show text, score etc
 pygame.font.init()  # Initialize fonts
 font = pygame.font.Font(None, 36)  # Create font object
 big_font = pygame.font.Font(None, 55)
+small_font = pygame.font.Font(None, 24)
 
+# I draws the score
 def draw_score(screen, player):
     """Displays the player's score"""
     score_text = font.render(f"Score: {player.score}", True, (255, 255, 255))
@@ -155,17 +172,36 @@ def draw_score(screen, player):
     coins_text = font.render(f"Coins: {player.coins}", True, (255, 255, 255))
     screen.blit(coins_text, (680, 20))
 
+# It shows the "Game Over", "Game Finished" statuses
 def draw_game_status(screen, player):
-    if player.mario_dead:
-        status_text = big_font.render(f"Game Over", True, (255, 255, 255))
-        text_rect = status_text.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
-        screen.blit(status_text, text_rect)
-    elif player.game_over:
-        status_text = big_font.render(f"Game Finished", True, (255, 255, 255))
-        text_rect = status_text.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
-        screen.blit(status_text, text_rect)
-
+    overlay = pygame.Surface((screen.get_width(), screen.get_height()), pygame.SRCALPHA)
     
+    if player.mario_dead:           # Check if mario is dead
+        status_text = big_font.render("Game Over", True, (255, 255, 255))
+    elif player.game_over:          # Check if game is finished
+        status_text = big_font.render("Game Finished", True, (255, 255, 255))
+    else:
+        return  # Exit if the game is not over
+    
+    # Find the center
+    text_rect = status_text.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
+    
+    # Restart instruction text
+    restart_text = small_font.render("Press Ctrl + R to restart", True, (255, 255, 255))
+    restart_rect = restart_text.get_rect(center=(screen.get_width() // 2, text_rect.bottom + 20))
+
+    # Optional: Add a semi-transparent dark overlay
+    overlay.fill((0, 0, 0, 150))  # RGBA (last value 150 makes it semi-transparent)
+    
+    # Blit everything onto the overlay
+    overlay.blit(status_text, text_rect)
+    overlay.blit(restart_text, restart_rect)
+    
+    # Finally, draw the overlay onto the screen
+    screen.blit(overlay, (0, 0))
+    
+# Logic to restart.
+# It resets everything
 def restart_game():
     global player, all_sprites, collidable_objs, collidable_enimies, ground_blocks, blocks, treasure_blocks, tubes, mountains, bushes, coins, goomabases, stones, castle_group, flag, pillar
 
@@ -250,12 +286,17 @@ def restart_game():
 # Set up display
 all_sprites.add(player)
 
+
+# The game loop
+# This thing does everything
 while running:
-    for event in pygame.event.get():
+
+    # Check for events
+    for event in pygame.event.get():        # If close is pressed
         if event.type == pygame.QUIT:
             running = False
 
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_r:        # If ctrl + R is pressed. Restart the game
             if pygame.key.get_mods() & pygame.KMOD_CTRL:
                 restart_game()
 
@@ -269,7 +310,7 @@ while running:
     pillar.update()
 
     # Draw everything
-    screen.fill((0, 140, 250)) 
+    screen.fill((0, 140, 250))
 
     # Draw background elements (mountains, clouds, bushes)
     for group in [bushes, mountains, clouds, coins]:
@@ -294,10 +335,10 @@ while running:
         screen.blit(sprite.image, camera.apply(sprite))
 
     draw_score(screen, player)
-    draw_game_status(screen, player)
+    draw_game_status(screen, player) 
 
     pygame.display.flip()
-    clock.tick(FPS)
+    clock.tick(FPS)         # Controls FPS
 
 pygame.quit()
 sys.exit()

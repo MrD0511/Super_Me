@@ -9,6 +9,8 @@ def resource_path(relative_path):
 
 tiles_image = pygame.image.load(resource_path("assets/images/platform/tiles.png"))
 
+
+# To get the tile
 def get_tile( x, y, width, height):
 
     tile_surface = pygame.Surface((height,width), pygame.SRCALPHA)
@@ -17,15 +19,18 @@ def get_tile( x, y, width, height):
 
     return tile_surface
 
+# Castle class
 class Castle(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.image = pygame.Surface((160,160))
+        self.image = pygame.Surface((160,160), pygame.SRCALPHA)     # In this SRCALPHA adds the taransparent colour to the suface
+        # It helps blending the surface to blend in the scene
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
 
-        self.image.fill((0, 140, 250))
+
+        # Generating the castle
         self.image.blit(get_tile(32*12, 32, 32, 32), (0, 96))
         self.image.blit(get_tile(32*12, 32, 32, 32), (32, 96))
         self.image.blit(get_tile(32*12, 32, 32, 32), (96, 96))

@@ -74,6 +74,7 @@ A classic **Super Mario Bros.** remake built using **Pygame**. This project recr
 ### **Credits**
 
 - Game Development – Dhruv Sharma
+- Tester - Shubham Sali
 - Assets – Original Super Mario Bros. sprites & sounds (used for educational purposes)
 - Tools Used – Pygame, Python
 
